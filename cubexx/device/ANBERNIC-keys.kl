@@ -1,0 +1,35 @@
+# CubeXX (Allwinner H700/H616) stock gpio-keys-polled driver. The analog sticks
+# are read by the stock ADC/amux driver and exposed on ANBERNIC-keys as
+# ABS_Z/RX/RY/RZ (0x02/03/04/05), already centered and scaled to -4096..4096.
+# Left stick = ABS_Z (horizontal) + ABS_RX (vertical).
+# Right stick = ABS_RY (horizontal) + ABS_RZ (vertical).
+# There is NO ABS_X/ABS_Y on CubeXX; do not use the RG34XXSP module axis layout.
+# Digital codes per stock DTS: A=304 B=305 X=306 Y=307 L1=308 R1=309 SEL=310
+# START=311 MODE=312 L3=313 L2=314 R2=315 R3=316 VOL-=114 VOL+=115.
+# Lock-screen bring-up policy: physical A must be a direct confirm/unlock.
+key 304 ENTER
+key 305 BUTTON_B
+key 306 BUTTON_X
+key 307 BUTTON_Y
+key 308 BUTTON_L1
+key 309 BUTTON_R1
+key 314 BUTTON_L2
+key 315 BUTTON_R2
+key 310 BUTTON_SELECT
+key 311 BUTTON_START
+key 312 BUTTON_MODE
+key 313 BUTTON_THUMBL
+key 316 BUTTON_THUMBR
+key 114 VOLUME_DOWN
+key 115 VOLUME_UP
+
+# Menu's extra release-time 0x162 pulse is deliberately unmapped.
+# BUTTON_MODE falls back to HOME; do not also dispatch the extra pulse.
+# Android: left stick = AXIS_X/AXIS_Y, right stick = AXIS_Z/AXIS_RZ.
+# Vertical axes may need "invert" if up/down is reversed on device.
+axis 0x02 X
+axis 0x03 Y
+axis 0x04 Z
+axis 0x05 RZ
+axis 0x10 HAT_X
+axis 0x11 HAT_Y

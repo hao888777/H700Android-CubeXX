@@ -1,0 +1,68 @@
+{
+  "status": "BUILT_PENDING_PHYSICAL_TEST",
+  "device": "RG CubeXX (H700,1GB,720x720)",
+  "mode": "seed",
+  "image": "ROC_OS_CubeXX_seed_fontfix_camfix.img.gz",
+  "base": "ROC_OS_CubeXX_seed_bt.img (raw_sha256 b2093fdff2bf6ed0311b0fa0d384c766802dcb34eae98170497cf9b16f86d441)",
+  "raw_bytes": 32434554368,
+  "raw_sha256": "34d2845268ebab531b5569636bd247728ad4ab23cff0b9beca38cd0415ab58f5",
+  "gz_bytes": 596068492,
+  "gz_sha256": "0cad1345dad978e22baa7e970b1755e14f8143ab3b6ff637a6d4038840fa7343",
+  "gzip_integrity": "gzip -t OK",
+  "changed_partition": "system only (p5); boot chain / vendor / userdata / GPT byte-identical to seed_bt",
+  "fixes": [
+    {
+      "id": "font-crash",
+      "target": "/system/lib64/libhwui.so",
+      "detail": "trampoline @ VA 0x2f4fa4 calls setRobotoTypefaceForTest (0x36ef60) then reloads gDefaultTypeface (0x64a820); fixes null-typeface ASSERT that bounced app installs. No platform key needed (system .so unsigned).",
+      "trampoline_words": "a9bf7bfd 9401e7ee a8c17bfd d0001aaa f9441149 aa1f03e1 17ffffbe"
+    },
+    {
+      "id": "joystick-keylayout",
+      "target": "/system/usr/keylayout/{ANBERNIC-keys.kl,Vendor_0001_Product_0001.kl,Vendor_0001_Product_0001_Version_0100.kl}",
+      "detail": "CubeXX gpio-keys-polled axes: ABS_Z(0x02)->AXIS_X, RX(0x03)->AXIS_Y, RY(0x04)->AXIS_Z, RZ(0x05)->AXIS_RZ; HAT0X/Y->HAT. Left stick=Z/RX, right=RY/RZ.",
+      "verification": "All 4 stick axes confirmed live on-device (sticks_live.txt: Z/RX/RY/RZ moved, -4096..4096) AND user verified left/right joysticks work end-to-end on the flashed image (no invert needed). All 15 digital codes + D-pad cross-checked against stock boot.dts gpio-keys node (A=0x130..R3=0x13c, VOL=0x72/0x73, D-pad=HAT 0x10/0x11) and match. Per-button live sweep not separately recorded (codes DTS-verified). KEY_ESC(1) unmapped; Menu release pulse KEY_GOTO(0x162) deliberately unmapped (MODE falls back to HOME)."
+    },
+    {
+      "id": "logd-kernel-optin",
+      "target": "/system/build.prop + /system/etc/init/logd-kernel-optin.rc",
+      "detail": "Kernel log into logcat -b kernel is now DEFAULT OFF (removed ro.logd.kernel=true; no klogd overhead at boot). Kept ro.logd.size.kernel=262144. Opt-in for current boot: setprop debug.logd.kernel 1 -> rc sets ro.logd.kernel true + restart logd. debug.* is non-persistent so next boot starts OFF again. No sepolicy change."
+    },
+    {
+      "id": "bluetooth-removed",
+      "target": "/system/app/Bluetooth/* + /system/etc/permissions/android.hardware.bluetooth{,_le}.xml",
+      "detail": "Removed donor Bluetooth.apk + JNI symlink + 2 feature xmls. Donor apk not platform-signed -> lacks INTERACT_ACROSS_USERS_FULL -> BluetoothOppFileProvider registerReceiverAsUser SecurityException crash-loop on bind (8 boot crashes then AM backoff). Removal eliminates this boot crash-loop contributor. Vendor BT HAL/libs left inert. Full BT parked (needs platform key CN=ROC OS platform)."
+    },
+    {
+      "id": "cameraserver-reenable",
+      "target": "/system/etc/init/cameraserver.rc",
+      "detail": "Reverted the task#14 `disabled` flag. Disabling cameraserver made system_server's UsbCameraDeviceManagerObserver$BootCompletedReceiver block the MAIN thread in Camera.getNumberOfCameras -> BpServiceManager::getService(media.camera) usleep-spin (service never published) -> Watchdog killed system_server -> recurring soft reboot (dropbox system_server_watchdog x4: 11:22/11:26/11:30/11:38, all identical camera stack). cameraserver runs fine on this camera-less hardware (init.svc.cameraserver=running, media.camera found, 0 cameras), so class-main auto-start makes the service ready before BOOT_COMPLETED. incidentd/mediametrics/statsd remain disabled. Cost ~5.3M PSS, far less than the watchdog loop."
+    }
+  ],
+  "structural_validation": {
+    "gpt_primary_backup_match": true,
+    "gpt_entry_crc_ok": true,
+    "ext4_magic_system": true,
+    "ext4_magic_vendor": true,
+    "ext4_magic_userdata": true,
+    "boot0_signature_eGON_BT0": true,
+    "boot0_matches_stock_recon": true,
+    "e2fsck_system_rc": 0
+  },
+  "partitions": [
+    {"number": 1, "name": "special", "start": 37748736, "end_exclusive": 104857600},
+    {"number": 2, "name": "boot-resource", "start": 104857600, "end_exclusive": 138412032},
+    {"number": 3, "name": "env", "start": 138412032, "end_exclusive": 155189248},
+    {"number": 4, "name": "boot", "start": 155189248, "end_exclusive": 222298112},
+    {"number": 5, "name": "system", "start": 222298112, "end_exclusive": 8812232704},
+    {"number": 6, "name": "vendor", "start": 8812232704, "end_exclusive": 10959716352},
+    {"number": 7, "name": "userdata", "start": 10959716352, "end_exclusive": 32434552832}
+  ],
+  "userdata_bytes": 21474836480,
+  "first_boot": "grow --apply fills GPT to card size + reboot, then resize2fs fills p7 (any card >=32GB)",
+  "adb": "enabled (ro.secure=0 ro.debuggable=1 ro.adb.secure=0 usb=adb tcp5555)",
+  "boot_chain": "CubeXX stock boot0/TOC1/kernel/DTB + project ramdisk + enforcing",
+  "physical_device_tested": false,
+  "card_written": false,
+  "parked": ["bluetooth app removed from image (full BT needs platform key)", "brightness framework min 10->2 (needs platform key)", "backlight hotkey/program control (task #17)", "system vibrator HAL: VibratorService is HIDL-only (legacy vibrator.default.so unused, targets absent timed_output/LED nodes); motor reachable only via input FF on event1 (game rumble confirmed working physically). Full HIDL IVibrator service + hal_vibrator_default input_device sepolicy parked: AOSP source tree removed, hidl-gen/secilc missing, device no-root so flash-only test (task #23)", "stock launcher3 font crash: #19 libhwui trampoline (0x2f4fa4, present) does not cover Typeface::resolveDefault early path -> boot-time gDefaultTypeface-null SIGABRT crash loop in com.android.launcher3 (task #25). Parked by user: uses a third-party launcher, stock launcher3 crash does not affect usage, app install works"]
+}

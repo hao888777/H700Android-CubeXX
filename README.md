@@ -60,6 +60,14 @@ Test10 已合入：
 
 构建者使用自己的签名密钥；官方私钥、设备身份和原始运行日志不公开。仓库不提供游戏 ROM 或商业游戏资源，各第三方组件保留各自许可。
 
+## CubeXX 适配（增量）
+
+RG CubeXX（H700，1GB，720×720 方屏，无触摸）的专属适配成果以**纯增量**方式收录在 [`cubexx/`](cubexx/README.md)，上游多机型内容未改写。策略为复用原厂 CubeXX 启动链（boot0/TOC1/kernel/DTB）叠加本项目 Android system/vendor，不重编内核；镜像走预构建覆盖（debugfs 打补丁进 ext4 → dd 整卡 → gzip），由使用者用 Rufus 刷到另一张 TF 卡测试。
+
+已合入并经实机验证：摇杆 keylayout（左 Z/RX、右 RY/RZ，无 ABS_X/Y）、相机看门狗修复、内核日志默认关闭、蓝牙崩溃环移除、字体蹦床（修复应用安装）、userdata 自动扩容、游戏振动（input FF，电机物理确认）。搁置项：完整蓝牙与亮度下限（需 platform 密钥）、背光热键、系统振动 HAL（HIDL-only，工具/源码缺失）、原厂 launcher3 字体崩溃（用三方桌面规避）。
+
+详见 [CubeXX 适配说明](cubexx/README.md)（硬件要点、已完成/搁置修复、构建流程、目录结构、脱敏构建回执）。
+
 ## 反馈
 
 通过 [Issues](https://github.com/LPF970915/H700Android/issues) 提供机型、完整镜像文件名／哈希、触发步骤、是否刚熄屏或合盖，以及可用日志。请去除设备标识和账户、网络信息；“重启后暂时正常”不作为故障关闭依据。
