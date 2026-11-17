@@ -12,6 +12,17 @@
 
 ---
 
+## 镜像下载（已编译）
+
+CubeXX 已编译整卡镜像（`.img.gz`），用 Rufus 刷到**另一张** ≥32GB（建议 64GB）TF 卡，TF2 留空，核对目标卡。两个网盘提取码均为 `cube`：
+
+- 123 云盘：<https://1820052963.share.123pan.cn/123pan/y5lkjv-SgVUh?pwd=cube#>
+- 百度网盘：<https://pan.baidu.com/s/1yNzMmNZxrQ-jYIQ1ofiG6A?pwd=cube>
+
+下载后请核对文件名与 SHA256 再刷入；当前构建身份、分区与校验哈希见下文「镜像构建流程」及 `evidence/camfix-result.json`。首启数据区扩容需等待，后续启动复用。
+
+---
+
 ## 1. 硬件要点（实测/DTS 核对）
 
 ### 输入：event1 `ANBERNIC-keys`

@@ -66,6 +66,8 @@ RG CubeXX（H700，1GB，720×720 方屏，无触摸）的专属适配成果以*
 
 已合入并经实机验证：摇杆 keylayout（左 Z/RX、右 RY/RZ，无 ABS_X/Y）、相机看门狗修复、内核日志默认关闭、蓝牙崩溃环移除、字体蹦床（修复应用安装）、userdata 自动扩容、游戏振动（input FF，电机物理确认）。搁置项：完整蓝牙与亮度下限（需 platform 密钥）、背光热键、系统振动 HAL（HIDL-only，工具/源码缺失）、原厂 launcher3 字体崩溃（用三方桌面规避）。
 
+已编译镜像下载（提取码 `cube`）：[123 云盘](https://1820052963.share.123pan.cn/123pan/y5lkjv-SgVUh?pwd=cube#) · [百度网盘](https://pan.baidu.com/s/1yNzMmNZxrQ-jYIQ1ofiG6A?pwd=cube)。
+
 详见 [CubeXX 适配说明](cubexx/README.md)（硬件要点、已完成/搁置修复、构建流程、目录结构、脱敏构建回执）。
 
 ## 反馈
